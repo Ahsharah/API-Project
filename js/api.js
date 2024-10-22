@@ -45,3 +45,42 @@ export async function getPokemonList(offset = 0, limit = DEFAULT_LIMIT) {
     }
 }
 
+/**
+ * Fetches detailed information about a specific Pokémon
+ * @param {string} nameOrId - Name or ID of the Pokémon
+ * @returns {Promise<Object>} - Detailed Pokémon data
+ * @throws {Error} - If the fetch fails or returns non-OK status
+ */
+export async function getPokemonDetails(nameOrId) {
+    try {
+        const response = await fetch(`${BASE_URL}/pokemon/${nameOrId}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Return only the data we need to reduce payload size
+        return {
+            id: data.id,
+            name: data.name,
+            types: data.types.map(type => type.type.name),
+            sprites: {
+                front: data.sprites.front_default,
+                back: data.sprites.back_default,
+                official: data.sprites.other['official-artwork'].front_default
+            },
+            stats: data.stats.map(stat => ({
+                name: stat.stat.name,
+                value: stat.base_stat
+            })),
+            height: data.height,
+            weight: data.weight,
+            abilities: data.abilities.map(ability => ability.ability.name)
+        };
+    } catch (error) {
+        console.error(`Error fetching details for ${nameOrId}:`, error);
+        throw error;
+    }
+}
