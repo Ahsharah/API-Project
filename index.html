@@ -1,14 +1,87 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-        <script src="" async defer></script>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeAPI Explorer</title>
+    <!-- Link to our stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- 
+        The type="module" attribute is crucial as it:
+        1. Enables ES6 module syntax (import/export)
+        2. Automatically enables strict mode
+        3. Defers script loading by default
+    -->
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <h1>PokéAPI Explorer</h1>
+        <!-- Search and filter controls -->
+        <div class="controls">
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search Pokémon..."
+                    aria-label="Search for Pokémon"
+                >
+                <button 
+                    id="searchButton"
+                    aria-label="Search"
+                    class="search-btn"
+                >
+                    Search
+                </button>
+            </div>
+            <!-- Type filter dropdown -->
+            <div class="filter-container">
+                <select id="typeFilter" aria-label="Filter by type">
+                    <option value="">All Types</option>
+                    <!-- Types will be populated by JavaScript -->
+                </select>
+            </div>
+        </div>
+    </header>
+    <main>
+        <!-- Loading spinner -->
+        <div id="loading" class="loading-spinner hidden">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+        
+        <!-- Error message container -->
+        <div id="error" class="error-message hidden"></div>
+        
+        <!-- Pokemon grid container -->
+        <div id="pokemonGrid" class="pokemon-grid">
+            <!-- Pokemon cards will be inserted here by JavaScript -->
+        </div>
+
+        <!-- Pagination controls -->
+        <div class="pagination">
+            <button id="prevPage" class="page-btn" aria-label="Previous page">
+                Previous
+            </button>
+            <span id="currentPage">1</span>
+            <button id="nextPage" class="page-btn" aria-label="Next page">
+                Next
+            </button>
+        </div>
+    </main>
+
+    <!-- Pokemon detail modal -->
+    <div id="pokemonModal" class="modal hidden">
+        <div class="modal-content">
+            <button id="closeModal" class="close-btn" aria-label="Close modal">&times;</button>
+            <div id="modalContent">
+                <!-- Pokemon details will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created with ❤️ using <a href="https://pokeapi.co" target="_blank" rel="noopener noreferrer">PokeAPI</a></p>
+    </footer>
+</body>
 </html>
