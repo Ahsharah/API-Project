@@ -84,3 +84,44 @@ export async function getPokemonDetails(nameOrId) {
         throw error;
     }
 }
+/**
+ * Searches for Pokémon by name
+ * @param {string} searchTerm - The search term to query
+ * @returns {Promise<Array>} - Array of matching Pokémon
+ * @throws {Error} - If the fetch fails or returns non-OK status
+ */
+export async function searchPokemon(searchTerm) {
+    try {
+        // First get a large list of Pokémon to search through
+        const { pokemon } = await getPokemonList(0, 100);
+        
+        // Filter pokemon based on search term
+        return pokemon.filter(p => 
+            p.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    } catch (error) {
+        console.error('Error searching Pokemon:', error);
+        throw error;
+    }
+}
+
+/**
+ * Fetches all available Pokémon types
+ * @returns {Promise<Array>} - Array of Pokémon types
+ * @throws {Error} - If the fetch fails or returns non-OK status
+ */
+export async function getPokemonTypes() {
+    try {
+        const response = await fetch(`${BASE_URL}/type`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.results.map(type => type.name);
+    } catch (error) {
+        console.error('Error fetching Pokemon types:', error);
+        throw error;
+    }
+}
