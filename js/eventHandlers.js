@@ -44,3 +44,19 @@ async function handleSearch(searchTerm) {
         ui.hideLoading();
     }
 }
+/**
+ * Shows detailed information for a selected Pokemon
+ * @param {string} pokemonId - ID of the selected Pokemon
+ */
+async function showPokemonDetails(pokemonId) {
+    try {
+        ui.showLoading();
+        const pokemon = await api.getPokemonDetails(pokemonId);
+        ui.showPokemonModal(pokemon);
+    } catch (error) {
+        ui.showError('Error loading Pokémon details. Please try again.');
+        console.error('Detail loading error:', error);
+    } finally {
+        ui.hideLoading();
+    }
+}
