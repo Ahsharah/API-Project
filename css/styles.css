@@ -88,10 +88,12 @@ body {
     transition: background-color var(--transition-speed) ease,
                 transform var(--transition-speed) ease;
 }
+
 .search-btn:hover, .page-btn:hover {
     background-color: #2a3899;
     transform: translateY(-2px);
 }
+
 .search-btn:active, .page-btn:active {
     transform: translateY(0);
 }
@@ -112,6 +114,7 @@ body {
     cursor: pointer;
     min-width: 150px;
 }
+
 /* View Controls */
 .view-controls {
     display: flex;
@@ -203,3 +206,213 @@ body {
     transform: scale(1.2);
 }
 
+/* Type Badges */
+.type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    margin: 0.25rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed) ease,
+                visibility var(--transition-speed) ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform var(--transition-speed) ease;
+}
+
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
+/* Compare Modal */
+.compare-content {
+    max-width: 1000px;
+}
+
+.compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Stats Display */
+.stats {
+    margin-top: 1.5rem;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+    gap: 0.5rem;
+}
+
+.stat-name {
+    flex: 1;
+    text-align: right;
+    font-weight: bold;
+}
+
+.stat-bar {
+    flex: 2;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stat-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width var(--transition-speed) ease;
+}
+
+.stat-value {
+    flex: 0 0 40px;
+    text-align: right;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn var(--transition-speed) ease-in;
+}
+
+.slide-in {
+    animation: slideIn var(--transition-speed) ease-out;
+}
+
+/* Error Message */
+.error-message {
+    color: var(--error-color);
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+    }
+
+    .search-container {
+        width: 100%;
+        max-width: none;
+    }
+
+    .filter-sort-container {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .view-controls {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .pokemon-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        padding: 1rem;
+    }
+
+    .compare-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
