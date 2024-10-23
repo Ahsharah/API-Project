@@ -1,31 +1,28 @@
 // js/ui.js
 
+import { getFavorites, getCompareList } from './storage.js';
+
 /**
- * Creates a card element for a single Pokémon
- * @param {Object} pokemon - Pokemon data object
- * @returns {HTMLElement} - Pokemon card element
+ * Type color mapping for Pokemon type badges
  */
-export function createPokemonCard(pokemon) {
-    const card = document.createElement('div');
-    card.className = 'pokemon-card';
-    card.dataset.id = pokemon.id;
-     // Capitalize the first letter of the name
-     const displayName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
-    
-     card.innerHTML = `
-         <img 
-             src="${pokemon.sprites.front}" 
-             alt="${displayName}"
-             loading="lazy"
-         >
-         <h3>${displayName}</h3>
-         <div class="pokemon-types">
-             ${pokemon.types.map(type => 
-                 `<span class="type-badge ${type}">${type}</span>`
-             ).join('')}
-         </div>
-     `;
-     
-     return card;
- }
- 
+const TYPE_COLORS = {
+    normal: '#A8A878',
+    fire: '#F08030',
+    water: '#6890F0',
+    electric: '#F8D030',
+    grass: '#78C850',
+    ice: '#98D8D8',
+    fighting: '#C03028',
+    poison: '#A040A0',
+    ground: '#E0C068',
+    flying: '#A890F0',
+    psychic: '#F85888',
+    bug: '#A8B820',
+    rock: '#B8A038',
+    ghost: '#705898',
+    dragon: '#7038F8',
+    dark: '#705848',
+    steel: '#B8B8D0',
+    fairy: '#EE99AC'
+};
+
