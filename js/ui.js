@@ -157,4 +157,13 @@ modal.classList.add('active');
  * @param {Object} stat - Stat data
  * @returns {string} HTML string for stat bar
  */
-
+function createStatBar(stat) {
+    const percentage = (stat.value /255) * 100;// 255 is max possible stat
+    return `
+    <div class="stat-row"
+        <span class="stat-name">${stat.name}</span>
+        <div> class="stat-bar">
+            <div class="stat-fill" style="width: ${percentage}%"></div>
+            </div>
+    `;
+}
