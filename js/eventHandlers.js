@@ -86,3 +86,32 @@ prevButton.addEventListener('click', () => {
         loadPokemonPage(state.currentPage - 1);
     }
 });
+nextButton.addEventListener('click', () => {
+    const maxPage = Math.ceil(state.totalItems / state.itemsPerPage);
+    if (state.currentPage < maxPage) {
+        loadPokemonPage(state.currentPage + 1);
+    }
+});
+
+// Pokemon card clicks
+document.getElementById('pokemonGrid').addEventListener('click', (e) => {
+    const card = e.target.closest('.pokemon-card');
+    if (card) {
+        showPokemonDetails(card.dataset.id);
+    }
+});
+// Modal close button
+document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('pokemonModal').classList.add('hidden');
+});
+
+// Close modal when clicking outside content
+document.getElementById('pokemonModal').addEventListener('click', (e) => {
+    if (e.target.id === 'pokemonModal') {
+        e.target.classList.add('hidden');
+    }
+});
+}
+
+// Export functions needed by other modules
+export { loadPokemonPage, handleSearch, handleTypeFilter };
