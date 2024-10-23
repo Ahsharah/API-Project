@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokeAPI Explorer</title>
-    <!-- Link to our stylesheet -->
+    <title>Enhanced PokéAPI Explorer</title>
     <link rel="stylesheet" href="css/styles.css">
-    <!-- 
-        The type="module" attribute is crucial as it:
-        1. Enables ES6 module syntax (import/export)
-        2. Automatically enables strict mode
-        3. Defers script loading by default
-    -->
     <script type="module" src="js/main.js"></script>
 </head>
 <body>
+    <!-- Main header section -->
     <header class="main-header">
         <h1>PokéAPI Explorer</h1>
-        <!-- Search and filter controls -->
+        
+        <!-- Enhanced controls section -->
         <div class="controls">
+            <!-- Search section -->
             <div class="search-container">
                 <input 
                     type="text" 
@@ -34,15 +30,36 @@
                     Search
                 </button>
             </div>
-            <!-- Type filter dropdown -->
-            <div class="filter-container">
+
+            <!-- Filter and Sort section -->
+            <div class="filter-sort-container">
                 <select id="typeFilter" aria-label="Filter by type">
                     <option value="">All Types</option>
-                    <!-- Types will be populated by JavaScript -->
                 </select>
+
+                <select id="sortSelect" aria-label="Sort Pokémon">
+                    <option value="id">Number (Default)</option>
+                    <option value="name">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="height">Height</option>
+                    <option value="weight">Weight</option>
+                </select>
+            </div>
+
+            <!-- View Controls -->
+            <div class="view-controls">
+                <button id="toggleFavorites" class="toggle-btn" aria-label="Toggle Favorites">
+                    <span class="heart-icon">♥</span> Favorites
+                    (<span id="favCount">0</span>)
+                </button>
+                <button id="compareButton" class="compare-btn" disabled aria-label="Compare Selected">
+                    Compare Selected (<span id="compareCount">0</span>)
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- Main content area -->
     <main>
         <!-- Loading spinner -->
         <div id="loading" class="loading-spinner hidden">
@@ -80,8 +97,19 @@
         </div>
     </div>
 
+    <!-- Compare modal -->
+    <div id="compareModal" class="modal hidden">
+        <div class="modal-content compare-content">
+            <button id="closeCompareModal" class="close-btn" aria-label="Close comparison">&times;</button>
+            <div id="compareContent" class="compare-grid">
+                <!-- Comparison content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>Created with ❤️ using <a href="https://pokeapi.co" target="_blank" rel="noopener noreferrer">PokeAPI</a></p>
+        <p class="version">Version 2.0</p>
     </footer>
 </body>
 </html>
