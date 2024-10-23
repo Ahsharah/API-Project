@@ -60,3 +60,26 @@ export function createPokemonCard(pokemon, isFavorite = false, isCompared = fals
         <button class="details-btn" aria-label="View details">View Details</button>
     `;
 
+    // Add hover animation for the image
+    const im = card.querySelector('img');
+    Image.addEventListener('mouseenter', () => {
+        if (pokemon.sprites.back) {
+            img.src = pokemon.sprites.back
+        }
+    });
+    img.addEventListener('mouseleave', () => {
+        img.src = pokemon.sprites.official || pokemon.sprites.front;        
+
+    });
+
+    return card;
+}
+
+/**
+ * Creates a type badge element
+ * @param {string} type - Pokemon type
+ * @param {string} HTML string for (badge type) type badge
+ */
+function createTypeBadge(type) {
+
+}
