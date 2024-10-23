@@ -125,3 +125,32 @@ export async function getPokemonTypes() {
         throw error;
     }
 }
+
+/**
+ * Filters Pokémon by type
+ * @param {string} type - The type to filter by
+ * @param {number} limit - Number of results to return
+ * @returns {Promise<Array>} - Array of Pokémon of the specified type
+ * @throws {Error} - If the fetch fails or returns non-OK status
+ */
+export async function filterByType(type, limit = DEFAULT_LIMIT) {
+    try {
+        const response = await fetch(`${BASE_URL}/type/${type}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Get details for the first 'limit' number of Pokémon
+        const pokemonPromises = data.pokemon
+            .slice(0, limit)
+            .map(p => getPokemonDetails(p.pokemon.name));
+            
+        return await Promise.all(pokemonPromises);
+    } catch (error) {
+        console.error(`Error filtering Pokemon by type ${type}:`, error);
+        throw error;
+    }
+}
