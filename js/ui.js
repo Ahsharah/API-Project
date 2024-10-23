@@ -148,6 +148,13 @@ export function showPokemonModal(pokemon) {
     <div>
     `;
 
-
-
+modal.classList.remove('hidden');
+modal.classList.add('active');
 }
+
+/**
+ * Creates a stat bar element
+ * @param {Object} stat - Stat data
+ * @returns {string} HTML string for stat bar
+ */
+
