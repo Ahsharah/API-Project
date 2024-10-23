@@ -60,3 +60,29 @@ async function showPokemonDetails(pokemonId) {
         ui.hideLoading();
     }
 }
+/**
+ * Sets up all event listeners for the application
+ */
+export function setupEventListeners() {
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    
+    // Debounce search for better performance
+    const debouncedSearch = debounce((term) => handleSearch(term), 300);
+    
+    searchInput.addEventListener('input', (e) => debouncedSearch(e.target.value));
+    searchButton.addEventListener('click', () => handleSearch(searchInput.value));
+// Type filter
+const typeFilter = document.getElementById('typeFilter');
+typeFilter.addEventListener('change', (e) => handleTypeFilter(e.target.value));
+
+// Pagination
+const prevButton = document.getElementById('prevPage');
+const nextButton = document.getElementById('nextPage');
+
+prevButton.addEventListener('click', () => {
+    if (state.currentPage > 1) {
+        loadPokemonPage(state.currentPage - 1);
+    }
+});
