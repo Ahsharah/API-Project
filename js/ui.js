@@ -25,4 +25,38 @@ const TYPE_COLORS = {
     steel: '#B8B8D0',
     fairy: '#EE99AC'
 };
+/**
+ * Creates a Pokemon card element
+ * @param {Object} pokemon - Pokemon data
+ * @param {boolean} isFavorite - Whether Pokemon is favorited
+ * @param {boolean} isCompared - Whether Pokemon is in compare list
+ * @returns {HTMLElement} Pokemon card element
+ */
+export function createPokemonCard(pokemon, isFavorite = false, isCompared = false) {
+    const card = document.createElement('div');
+    card.className = 'pokemon-card slide-in';
+    card.dataset.id = pokemon.id;
+
+    const name = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+    
+    card.innerHTML = `
+        <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                aria-label="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+            ♥
+        </button>
+        <button class="compare-btn ${isCompared ? 'active' : ''}"
+                aria-label="${isCompared ? 'Remove from comparison' : 'Add to comparison'}">
+            ⚖
+        </button>
+        <img src="${pokemon.sprites.official || pokemon.sprites.front}" 
+             alt="${name}"
+             loading="lazy"
+             onerror="this.src='${pokemon.sprites.front}'">
+        <h3>${name}</h3>
+        <div class="pokemon-number">#${String(pokemon.id).padStart(3, '0')}</div>
+        <div class="type-container">
+            ${pokemon.types.map(type => createTypeBadge(type)).join('')}
+        </div>
+        <button class="details-btn" aria-label="View details">View Details</button>
+    `;
 
