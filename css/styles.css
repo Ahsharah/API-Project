@@ -1,140 +1,79 @@
-/* Add to your existing css/styles.css */
+/* css/styles.css */
 
-/* Enhanced Controls Styling */
-.filter-sort-container {
-    display: flex;
-    gap: 1rem;
+/* CSS Reset and Base Variables */
+:root {
+    --primary-color: #ff5350;
+    --secondary-color: #3b4cca;
+    --accent-color: #ffde00;
+    --background-color: #f7f7f7;
+    --text-color: #333;
+    --border-color: #ddd;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
 }
 
-.filter-sort-container select {
-    padding: 0.5rem;
-    border: 2px solid var(--border-color);
-    border-radius: 4px;
-    background-color: white;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.view-controls {
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Header Styles */
+.main-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.main-header h1 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Controls Section */
+.controls {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 0 1rem;
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
+    justify-content: center;
     align-items: center;
 }
 
-/* Favorites Styling */
-.toggle-btn, .compare-btn {
-    padding: 0.5rem 1rem;
-    border: 2px solid var(--primary-color);
+/* Search Container */
+.search-container {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 280px;
+    max-width: 400px;
+}
+
+#searchInput {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
     border-radius: 4px;
-    background-color: white;
-    color: var(--primary-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 1rem;
+    transition: border-color var(--transition-speed) ease;
 }
 
-.toggle-btn:hover, .compare-btn:hover {
-    background-color: var(--primary-color);
-    color: white;
+#searchInput:focus {
+    border-color: var(--secondary-color);
+    outline: none;
 }
 
-.toggle-btn.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.heart-icon {
-    color: var(--primary-color);
-    font-size: 1.2em;
-}
-
-.toggle-btn.active .heart-icon {
-    color: white;
-}
-
-/* Enhanced Pokemon Card Styling */
-.pokemon-card {
-    position: relative;
-}
-
-.favorite-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #ccc;
-    transition: transform 0.3s ease;
-}
-
-.favorite-btn.active {
-    color: var(--primary-color);
-}
-
-.favorite-btn:hover {
-    transform: scale(1.2);
-}
-
-/* Compare Feature Styling */
-.compare-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
-}
-
-.stat-comparison {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.stat-bar {
-    background-color: #f0f0f0;
-    height: 20px;
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-}
-
-.stat-fill {
-    height: 100%;
-    background-color: var(--primary-color);
-    transition: width 0.3s ease;
-}
-
-/* Animation Classes */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.fade-in {
-    animation: fadeIn 0.3s ease-in;
-}
-
-.slide-in {
-    animation: slideIn 0.3s ease-out;
-}
-
-/* Responsive Design Updates */
-@media (max-width: 768px) {
-    .filter-sort-container {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .view-controls {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .toggle-btn, .compare-btn {
-        width: 100%;
-    }
-}
