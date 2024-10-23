@@ -83,3 +83,52 @@ export function createPokemonCard(pokemon, isFavorite = false, isCompared = fals
 function createTypeBadge(type) {
 
 }
+
+/**
+ * Renders Pokemon grid
+ * @param {Array} pokemonList - List of Pokemon to render
+ */
+export function renderPokemonGrid(pokemonList) {
+    const grid = document.getElementById('pokemonGrid');
+    const favorites = getFavorite();
+    const compareList = getCompareList();
+
+    grid.innerHTML = '';
+
+    pokemonList.forEach(pokemon => {
+        const card = createPokemonCard(
+            pokemon,
+            favorites.has(pokemon.id.toString()),
+            compareList.has(pokemon.id.toString())
+        );
+        grid.appendChild(card);        
+    });
+}
+
+/**
+ * Shows Pokemon details in modal
+ * @param {Object} pokemon - Pokemon data
+ */
+export function showPokemonModal(pokemon) {
+    const modal = document.getElementById('pokemonModal');
+    const content = document.getElementById('modalContent');
+
+    content.innerHTML = `
+    <div class ="pokemon-detail fade-in">
+        <img src ="${pokemon.sprites.official || pokemon.sprites.front}"
+            alt="${pokemon.name}"
+            class="detail-image">
+            <h2>${pokemon.name.toUpperCase()}</h2>
+
+            <div class="type-container">
+                ${pokemon.types.map(type => createTypeBadge(type)).join('')}
+            <div>
+
+    
+    
+    
+    
+    
+    
+    `
+}
