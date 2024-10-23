@@ -124,11 +124,30 @@ export function showPokemonModal(pokemon) {
                 ${pokemon.types.map(type => createTypeBadge(type)).join('')}
             <div>
 
-    
-    
-    
-    
-    
-    
-    `
+            <p class="pokemon-description">${pokemon.description}<p>
+            
+            <div class"pokemon-attributes">
+                <div class="attribute">
+                    <span>Height:</span> ${pokemon.height}m
+            <div class="attribute">
+                <span>Base XP:</span> ${pokemon.baseExperience}
+                <div>
+            <div>
+
+            <div class="pokemon-stats">
+            <h3>Base Stats</h3>
+            ${pokemon.stats.map(stat => createStatBar(stat)).join(``)}
+            <div>
+
+            <div> class="pokemon-abilities">
+            <h3>Abilities</h3>
+            <p>${pokemon.abilities.map(ability =>
+                ability.charAt(0).toUpperCase() + ability.slice(1)
+            ).join(`,`)}<p>
+        <div>
+    <div>
+    `;
+
+
+
 }
