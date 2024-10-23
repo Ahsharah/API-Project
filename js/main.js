@@ -30,3 +30,11 @@ async function initializeApp() {
         ui.hideLoading();
     }
 }
+// Start the application when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+// Handle errors that occur during script loading
+window.addEventListener('error', (event) => {
+    ui.showError('An unexpected error occurred. Please refresh the page.');
+    console.error('Global error:', event.error);
+});
