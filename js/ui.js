@@ -220,3 +220,19 @@ export function showError(message) {
     errorElement.classList.remove('hidden');
 }
 
+/**
+ * Hides error message
+ *ii/
+export function hideError() {
+    document.getElementById('error').classList.add('hidden');
+}
+
+/**
+ * Updates pagination display
+ * @param {number} currentPage - Current page number
+ * @param {number} totalPages - Total number of pages
+ */
+export function updatePagination(currentPage, totalPages) {
+    document.getElementById('currentPage').textContent = `${currentPage} / ${totalPages}`;
+    document.getElementById('prevPage').disabled = currentPage === 1;
+    document.getElementById('nextPage').disabled = currentPage === totalPages;i
