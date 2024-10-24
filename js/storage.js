@@ -53,4 +53,12 @@ export function addToCompareList(pokemonId) {
     const compareList = getCompareList();
     compareList.add(pokemonId);
     localStorage.setItem('pokemonCompareList', JSON.stringify([...compareList]));
+}/**
+ * Remove Pokemon from compare list
+ * @param {string} pokemonId - Pokemon ID to remove
+ */
+export function removeFromCompareList(pokemonId) {
+    const compareList = getCompareList();
+    compareList.delete(pokemonId);
+    localStorage.setItem('pokemonCompareList', JSON.stringify([...compareList]));
 }
