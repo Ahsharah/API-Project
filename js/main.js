@@ -140,6 +140,24 @@ function setupErrorHandling() {
         ui.showError('An unexpected error occurred. Please refresh the page.');
     });
 }
+
+/**
+ * Sets up performance monitoring
+ */
+function setupPerformanceMonitoring() {
+    if (window.performance && window.performance.mark) {
+        window.performance.mark('app-init-start');
+
+        // Track when the app becomes interactive
+        Promise.resolve().then(() => {
+            window.performance.mark('app-init-end');
+            window.performance.measure('app-initialization', 'app-init-start', 'app-init-end');
+
+            const measure = window.performance.getEntriesByName('app-initialization')[0];
+            console.log('App initialized in ${Math.round(measure.duration)}ms');
+        });
+    }
+}
         // Load Pokemon types for filter
         const types = await api.getPokemonTypes();
         ui.updateTypeFilter(types);
