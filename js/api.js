@@ -1,43 +1,58 @@
 // js/api.js
 
 /**
- * Base URL for the PokeAPI
- * Using the v2 endpoint which is the most stable version I can find.
+ * Base configuration for API requests
  */
-const BASE_URL = 'https://pokeapi.co/api/v2';
+const API_CONFIG = {
+    BASE_URL: 'https://pokeapi.co/api/v2',
+    ENDPOINTS: {
+        POKEMON_LIST: '/pokemon',
+        POKEMON_DETAIL: '/pokemon/',  // e.g., /pokemon/ditto
+        POKEMON_TYPES: '/type',
+        POKEMON_SPECIES: '/pokemon-species/'
+    },
+    DEFAULT_LIMIT: 20,
+    MAX_POKEMON: 898 // Limit to original Pokemon for better performance
+};
 
 /**
- * Default limit
- * PokeAPI allows up to 100 items per request
+ * Generic fetch function with error handling
+ * @param {string} url - URL to fetch
+ * @param {Object} options - Fetch options
+ * @returns {Promise<any>} Response data
  */
-const DEFAULT_LIMIT = 20;
-/**
- * Fetches a paginated list of Pokémon
- * @param {number} offset - Number of items to skip for pagination
- * @param {number} limit - Number of items to fetch per page
- * @returns {Promise<Object>} - Object containing pokemon list and count
- * @throws {Error} - If the fetch fails or returns non-OK status
- */
-export async function getPokemonList(offset = 0, limit = DEFAULT_LIMIT) {
+async function fetchWithError(url, options = {}) {
     try {
-        const response = await fetch(
-            `${BASE_URL}/pokemon?offset=${offset}&limit=${limit}`
-        );
-        
+        const response = await fetch(url, options);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return await response.json();
+    } catch (error) {
+        console.error(`Fetch error: ${error.message}`);
+        throw error;
+    }
+}
+
+/**
+ * Fetches paginated list of Pokemon
+ * @param {number} offset - Starting index
+ * @param {number} limit - Number of items to fetch
+ * @returns {Promise<Object>} Pokemon list and count
+ */
+export async function getPokemonList(offset = 0, limit = API_CONFIG.DEFAULT_LIMIT) {
+    try {
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.POKEMON_LIST}?offset=${offset}&limit=${limit}`;
+        const data = await fetchWithError(url);
         
-        const data = await response.json();
-        
-        // Fetch detailed data for each Pokémon
-        const pokemonDetails = await Promise.all(
+        // Fetch detailed data for each Pokemon
+        const detailedPokemon = await Promise.all(
             data.results.map(pokemon => getPokemonDetails(pokemon.name))
         );
-        
+
         return {
-            pokemon: pokemonDetails,
-            count: data.count
+            pokemon: detailedPokemon,
+            count: Math.min(data.count, API_CONFIG.MAX_POKEMON)
         };
     } catch (error) {
         console.error('Error fetching Pokemon list:', error);
@@ -46,22 +61,20 @@ export async function getPokemonList(offset = 0, limit = DEFAULT_LIMIT) {
 }
 
 /**
- * Fetches detailed information about a specific Pokémon
- * @param {string} nameOrId - Name or ID of the Pokémon
- * @returns {Promise<Object>} - Detailed Pokémon data
- * @throws {Error} - If the fetch fails or returns non-OK status
+ * Fetches detailed Pokemon information by name or ID
+ * @param {string|number} nameOrId - Pokemon name or ID
+ * @returns {Promise<Object>} Detailed Pokemon data
  */
 export async function getPokemonDetails(nameOrId) {
     try {
-        const response = await fetch(`${BASE_URL}/pokemon/${nameOrId}`);
+        // Fetch basic Pokemon data
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.POKEMON_DETAIL}${nameOrId.toString().toLowerCase()}`;
+        const data = await fetchWithError(url);
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Return only the data we need to reduce payload size
+        // Fetch species data for additional details
+        const speciesData = await fetchWithError(data.species.url);
+
+        // Format and return the combined data
         return {
             id: data.id,
             name: data.name,
@@ -75,50 +88,80 @@ export async function getPokemonDetails(nameOrId) {
                 name: stat.stat.name,
                 value: stat.base_stat
             })),
-            height: data.height,
-            weight: data.weight,
-            abilities: data.abilities.map(ability => ability.ability.name)
+            height: data.height / 10, // Convert to meters
+            weight: data.weight / 10, // Convert to kilograms
+            abilities: data.abilities.map(ability => ({
+                name: ability.ability.name,
+                isHidden: ability.is_hidden
+            })),
+            baseExperience: data.base_experience,
+            description: speciesData.flavor_text_entries.find(
+                entry => entry.language.name === 'en'
+            )?.flavor_text.replace(/\f/g, ' ') || 'No description available.',
+            genus: speciesData.genera.find(
+                genus => genus.language.name === 'en'
+            )?.genus || '',
+            generation: speciesData.generation.name,
+            habitat: speciesData.habitat?.name || 'Unknown',
+            isLegendary: speciesData.is_legendary,
+            isMythical: speciesData.is_mythical,
+            evolutionChainUrl: speciesData.evolution_chain.url
         };
     } catch (error) {
         console.error(`Error fetching details for ${nameOrId}:`, error);
         throw error;
     }
 }
+
 /**
- * Searches for Pokémon by name
- * @param {string} searchTerm - The search term to query
- * @returns {Promise<Array>} - Array of matching Pokémon
- * @throws {Error} - If the fetch fails or returns non-OK status
+ * Fetches Pokemon evolution chain
+ * @param {string} evolutionChainUrl - Evolution chain URL
+ * @returns {Promise<Array>} Evolution chain data
  */
-export async function searchPokemon(searchTerm) {
+export async function getEvolutionChain(evolutionChainUrl) {
     try {
-        // First get a large list of Pokémon to search through
-        const { pokemon } = await getPokemonList(0, 100);
-        
-        // Filter pokemon based on search term
-        return pokemon.filter(p => 
-            p.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const data = await fetchWithError(evolutionChainUrl);
+        return processEvolutionChain(data.chain);
     } catch (error) {
-        console.error('Error searching Pokemon:', error);
+        console.error('Error fetching evolution chain:', error);
         throw error;
     }
 }
 
 /**
- * Fetches all available Pokémon types
- * @returns {Promise<Array>} - Array of Pokémon types
- * @throws {Error} - If the fetch fails or returns non-OK status
+ * Processes evolution chain data recursively
+ * @param {Object} chain - Evolution chain object
+ * @returns {Array} Processed evolution data
+ */
+function processEvolutionChain(chain) {
+    const evolutions = [];
+    
+    function processChain(currentChain, level = 0) {
+        evolutions.push({
+            name: currentChain.species.name,
+            level: level,
+            min_level: currentChain.evolution_details[0]?.min_level,
+            trigger: currentChain.evolution_details[0]?.trigger?.name,
+            item: currentChain.evolution_details[0]?.item?.name
+        });
+
+        currentChain.evolves_to.forEach(evolution => {
+            processChain(evolution, level + 1);
+        });
+    }
+
+    processChain(chain);
+    return evolutions;
+}
+
+/**
+ * Fetches all Pokemon types
+ * @returns {Promise<Array>} List of Pokemon types
  */
 export async function getPokemonTypes() {
     try {
-        const response = await fetch(`${BASE_URL}/type`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.POKEMON_TYPES}`;
+        const data = await fetchWithError(url);
         return data.results.map(type => type.name);
     } catch (error) {
         console.error('Error fetching Pokemon types:', error);
@@ -127,25 +170,38 @@ export async function getPokemonTypes() {
 }
 
 /**
- * Filters Pokémon by type
- * @param {string} type - The type to filter by
- * @param {number} limit - Number of results to return
- * @returns {Promise<Array>} - Array of Pokémon of the specified type
- * @throws {Error} - If the fetch fails or returns non-OK status
+ * Searches for Pokemon by name or ID
+ * @param {string} searchTerm - Search query
+ * @returns {Promise<Array>} Matching Pokemon list
  */
-export async function filterByType(type, limit = DEFAULT_LIMIT) {
+export async function searchPokemon(searchTerm) {
     try {
-        const response = await fetch(`${BASE_URL}/type/${type}`);
+        // Get a larger list for searching
+        const { pokemon } = await getPokemonList(0, 100);
+        const searchLower = searchTerm.toLowerCase();
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        return pokemon.filter(p => 
+            p.name.toLowerCase().includes(searchLower) ||
+            p.id.toString() === searchTerm
+        );
+    } catch (error) {
+        console.error('Error searching Pokemon:', error);
+        throw error;
+    }
+}
+
+/**
+ * Fetches Pokemon filtered by type
+ * @param {string} type - Pokemon type
+ * @returns {Promise<Array>} Filtered Pokemon list
+ */
+export async function filterByType(type) {
+    try {
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.POKEMON_TYPES}/${type}`;
+        const data = await fetchWithError(url);
         
-        const data = await response.json();
-        
-        // Get details for the first 'limit' number of Pokémon
         const pokemonPromises = data.pokemon
-            .slice(0, limit)
+            .slice(0, API_CONFIG.DEFAULT_LIMIT)
             .map(p => getPokemonDetails(p.pokemon.name));
             
         return await Promise.all(pokemonPromises);
@@ -154,3 +210,12 @@ export async function filterByType(type, limit = DEFAULT_LIMIT) {
         throw error;
     }
 }
+
+export default {
+    getPokemonList,
+    getPokemonDetails,
+    getPokemonTypes,
+    searchPokemon,
+    filterByType,
+    getEvolutionChain
+};
