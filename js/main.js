@@ -125,6 +125,21 @@ function handleInitializationError(error) {
         ui.showError('Failed to initialize application after ${initState.maxRetries} attempts. Please refresh the page.');
     }
 }
+
+/**
+ * Sets up error handling for uncaught errors
+ */
+function setupErrorHandling() {
+    window.addEventListener('error', (event) => {
+        console.error('Global error:', event.error);
+        ui.showError('An unexpected error occurred. Please refresh the page.');
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+        ui.showError('An unexpected error occurred. Please refresh the page.');
+    });
+}
         // Load Pokemon types for filter
         const types = await api.getPokemonTypes();
         ui.updateTypeFilter(types);
