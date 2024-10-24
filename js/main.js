@@ -105,6 +105,26 @@ function applyStoredSettings() {
         // Don't fail initialization for settings failure
     }
 }
+
+/**
+ * Handles initialization errors
+ * @oaram {Error} error - The error that occured
+ */
+function handleInitializationError(error) {
+    console.error('Initialization error:', error);
+
+    if (initState.retryCount < initState.maxRetries) {
+        initState.retryCount++;
+        ui.showError('Initialization failed. Retrying... (Attempt ${initState.retryCount}/${initState.maxRetries})');
+
+        // Retry initialization after a delay
+        setTimeout(() => {
+            initializeApp();
+        }, 2000 * initState.retryCount); // Increasing delay with each retry
+    } else {
+        ui.showError('Failed to initialize application after ${initState.maxRetries} attempts. Please refresh the page.');
+    }
+}
         // Load Pokemon types for filter
         const types = await api.getPokemonTypes();
         ui.updateTypeFilter(types);
