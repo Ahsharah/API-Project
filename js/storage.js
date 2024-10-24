@@ -35,3 +35,22 @@ export function addToFavorites(pokemonId) {
     favorites.add(pokemonId);
     localStorage.setItem('pokemonFavorites', JSON.stringify([...favorites]));
 }
+/**
+ * Remove Pokemon from favorites
+ * @param {string} pokemonId - Pokemon ID to remove
+ */
+export function removeFromFavorites(pokemonId) {
+    const favorites = getFavorites();
+    favorites.delete(pokemonId);
+    localStorage.setItem('pokemonFavorites', JSON.stringify([...favorites]));
+}
+
+/**
+ * Add Pokemon to compare list
+ * @param {string} pokemonId - Pokemon ID to add
+ */
+export function addToCompareList(pokemonId) {
+    const compareList = getCompareList();
+    compareList.add(pokemonId);
+    localStorage.setItem('pokemonCompareList', JSON.stringify([...compareList]));
+}
