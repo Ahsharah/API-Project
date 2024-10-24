@@ -21,11 +21,11 @@ const initState = {
 async function initializeApp() {
     try {
         if (initState.initialized) return;
-
+        
         // Show loading state
         ui.showLoading();
         
-        // Set up all event listeners
+        // Set up event listeners
         setupEventListeners();
         
         // Initialize components in parallel
@@ -35,11 +35,12 @@ async function initializeApp() {
             initializeCounters()
         ]);
 
+        // Apply stored settings
+        applyStoredSettings();
+
         // Mark as initialized
         initState.initialized = true;
-
-        // Apply any stored settings
-        applyStoredSettings();
+        
     } catch (error) {
         handleInitializationError(error);
     } finally {
@@ -52,14 +53,16 @@ async function initializeApp() {
  */
 async function initializeTypes() {
     try {
-        await loadPokemonPage(1);
+        const types = await api.getPokemonTypes();
+        ui.updateTypeFilter(types);
     } catch (error) {
-        throw new Error('Failed to load initial Pokemon data: ' + error.message);
+        console.error('Failed to load Pokemon types:', error);
+        // Don't fail initialization for type loading failure
     }
 }
 
 /**
- * Initialize first page of Pokemon
+ * Initializes first page of Pokemon
  */
 async function initializeFirstPage() {
     try {
@@ -82,46 +85,46 @@ function initializeCounters() {
 }
 
 /**
- * Applies any stored user settings
+ * Applies stored user settings
  */
 function applyStoredSettings() {
     try {
         const settings = storage.getSettings();
-
+        
         // Apply sort order
-        if (settings.sortOrder) {
-            const sortSelect = document.getElementById('sortSelect');
-            if (sortSelect) sortSelect.value = settings.sortOrder;
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect && settings.sortOrder) {
+            sortSelect.value = settings.sortOrder;
         }
 
-        // Apply prefeered type filter
-        if (settings.preferredType) {
-            const typeFilter = document.getElementById('typeFilter');
-            if (typeFilter) typeFilter.value = settings.preferredType;
+        // Apply preferred type if any
+        const typeFilter = document.getElementById('typeFilter');
+        if (typeFilter && settings.preferredType) {
+            typeFilter.value = settings.preferredType;
         }
 
-        // Apply theme if implemented
+        // Apply theme
         if (settings.theme) {
             document.body.dataset.theme = settings.theme;
         }
-
+        
     } catch (error) {
         console.error('Failed to apply stored settings:', error);
-        // Don't fail initialization for settings failure
+        // Continue with default settings
     }
 }
 
 /**
  * Handles initialization errors
- * @oaram {Error} error - The error that occured
+ * @param {Error} error - The error that occurred
  */
 function handleInitializationError(error) {
     console.error('Initialization error:', error);
-
+    
     if (initState.retryCount < initState.maxRetries) {
         initState.retryCount++;
         ui.showError(`Initialization failed. Retrying... (Attempt ${initState.retryCount}/${initState.maxRetries})`);
-
+        
         // Retry initialization after a delay
         setTimeout(() => {
             initializeApp();
@@ -152,12 +155,11 @@ function setupErrorHandling() {
 function setupPerformanceMonitoring() {
     if (window.performance && window.performance.mark) {
         window.performance.mark('app-init-start');
-
-        // Track when the app becomes interactive
+        
         Promise.resolve().then(() => {
             window.performance.mark('app-init-end');
             window.performance.measure('app-initialization', 'app-init-start', 'app-init-end');
-
+            
             const measure = window.performance.getEntriesByName('app-initialization')[0];
             console.log(`App initialized in ${Math.round(measure.duration)}ms`);
         });
@@ -177,8 +179,8 @@ function checkBrowserCompatibility() {
     };
 
     const incompatible = Object.entries(requirements)
-    .filter(([, supported]) => !supported)
-    .map(([feature]) => feature);
+        .filter(([, supported]) => !supported)
+        .map(([feature]) => feature);
 
     if (incompatible.length > 0) {
         ui.showError(`Your browser doesn't support: ${incompatible.join(', ')}. Please use a modern browser.`);
