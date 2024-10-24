@@ -222,7 +222,7 @@ export function showError(message) {
 
 /**
  * Hides error message
- *ii/
+ */
 export function hideError() {
     document.getElementById('error').classList.add('hidden');
 }
@@ -235,4 +235,5 @@ export function hideError() {
 export function updatePagination(currentPage, totalPages) {
     document.getElementById('currentPage').textContent = `${currentPage} / ${totalPages}`;
     document.getElementById('prevPage').disabled = currentPage === 1;
-    document.getElementById('nextPage').disabled = currentPage === totalPages;i
+    document.getElementById('nextPage').disabled = currentPage === totalPages;
+}
