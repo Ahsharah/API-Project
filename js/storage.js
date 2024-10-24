@@ -1,98 +1,150 @@
-/**
- * storage.js - Handles local storage operations for Pokemon favorites and compare list
- */
+// js/storage.js
 
 /**
- * Get set of favorite Pokemon IDs from local storage
- * @returns {Set<string>} Set of favorite Pokemon IDs
+ * Storage keys for localStorage
+ */
+const STORAGE_KEYS = {
+    FAVORITES: 'pokemon_favorites',
+    COMPARE_LIST: 'pokemon_compare',
+    SETTINGS: 'pokemon_settings'
+};
+
+/**
+ * Default application settings
+ */
+const DEFAULT_SETTINGS = {
+    itemsPerPage: 20,
+    sortOrder: 'id',
+    theme: 'light',
+    preferredType: null
+};
+
+/**
+ * Get items from localStorage
+ * @param {string} key - Storage key
+ * @returns {Array} Stored items or empty array
+ */
+function getStoredItems(key) {
+    try {
+        const items = localStorage.getItem(key);
+        return items ? JSON.parse(items) : [];
+    } catch (error) {
+        console.error(`Error reading from localStorage (${key}):`, error);
+        return [];
+    }
+}
+
+/**
+ * Save items to localStorage
+ * @param {string} key - Storage key
+ * @param {Array} items - Items to store
+ */
+function saveItems(key, items) {
+    try {
+        localStorage.setItem(key, JSON.stringify(items));
+    } catch (error) {
+        console.error(`Error writing to localStorage (${key}):`, error);
+    }
+}
+
+/**
+ * Get favorite Pokemon
+ * @returns {Set} Set of favorite Pokemon IDs
  */
 export function getFavorites() {
-    try {
-        const favorites = JSON.parse(localStorage.getItem('pokemonFavorites')) || [];
-        return new Set(favorites);
-    } catch (error) {
-        console.error('Error getting favorites:', error);
-        return new Set();
-    }
-}/**
- * Get set of Pokemon IDs in compare list from local storage
- * @returns {Set<string>} Set of Pokemon IDs in compare list
- */
-export function getCompareList() {
-    try {
-        const compareList = JSON.parse(localStorage.getItem('pokemonCompareList')) || [];
-        return new Set(compareList);
-    } catch (error) {
-        console.error('Error getting compare list:', error);
-        return new Set();
-    }
-}/**
- * Add Pokemon to favorites
- * @param {string} pokemonId - Pokemon ID to add
- */
-export function addToFavorites(pokemonId) {
-    const favorites = getFavorites();
-    favorites.add(pokemonId);
-    localStorage.setItem('pokemonFavorites', JSON.stringify([...favorites]));
-}
-/**
- * Remove Pokemon from favorites
- * @param {string} pokemonId - Pokemon ID to remove
- */
-export function removeFromFavorites(pokemonId) {
-    const favorites = getFavorites();
-    favorites.delete(pokemonId);
-    localStorage.setItem('pokemonFavorites', JSON.stringify([...favorites]));
+    return new Set(getStoredItems(STORAGE_KEYS.FAVORITES));
 }
 
 /**
- * Add Pokemon to compare list
- * @param {string} pokemonId - Pokemon ID to add
- */
-export function addToCompareList(pokemonId) {
-    const compareList = getCompareList();
-    compareList.add(pokemonId);
-    localStorage.setItem('pokemonCompareList', JSON.stringify([...compareList]));
-}/**
- * Remove Pokemon from compare list
- * @param {string} pokemonId - Pokemon ID to remove
- */
-export function removeFromCompareList(pokemonId) {
-    const compareList = getCompareList();
-    compareList.delete(pokemonId);
-    localStorage.setItem('pokemonCompareList', JSON.stringify([...compareList]));
-}
-/**
  * Toggle Pokemon favorite status
- * @param {string} pokemonId - Pokemon ID to toggle
+ * @param {string} id - Pokemon ID
  * @returns {boolean} New favorite status
  */
-export function toggleFavorite(pokemonId) {
+export function toggleFavorite(id) {
     const favorites = getFavorites();
-    const isFavorite = favorites.has(pokemonId);
+    const newStatus = !favorites.has(id);
     
-    if (isFavorite) {
-        removeFromFavorites(pokemonId);
+    if (newStatus) {
+        favorites.add(id);
     } else {
-        addToFavorites(pokemonId);
+        favorites.delete(id);
     }
     
-    return !isFavorite;
+    saveItems(STORAGE_KEYS.FAVORITES, Array.from(favorites));
+    return newStatus;
 }
+
 /**
- * Toggle Pokemon compare status
- * @param {string} pokemonId - Pokemon ID to toggle
- * @returns {boolean} New compare status
+ * Get Pokemon comparison list
+ * @returns {Set} Set of Pokemon IDs to compare
  */
-export function toggleCompare(pokemonId) {
+export function getCompareList() {
+    return new Set(getStoredItems(STORAGE_KEYS.COMPARE_LIST));
+}
+
+/**
+ * Toggle Pokemon comparison status
+ * @param {string} id - Pokemon ID
+ * @returns {Object} Status object with success and message
+ */
+export function toggleCompare(id) {
     const compareList = getCompareList();
-    const isCompared = compareList.has(pokemonId);
+    const isAdding = !compareList.has(id);
     
-    if (isCompared) {
-        removeFromCompareList(pokemonId);
-    } else {
-        addToCompareList(pokemonId);
+    if (isAdding && compareList.size >= 3) {
+        return {
+            success: false,
+            message: 'Can only compare up to 3 Pokemon at once.'
+        };
     }
     
-    return !isCompared;
+    if (isAdding) {
+        compareList.add(id);
+    } else {
+        compareList.delete(id);
+    }
+    
+    saveItems(STORAGE_KEYS.COMPARE_LIST, Array.from(compareList));
+    return {
+        success: true,
+        message: isAdding ? 'Added to comparison' : 'Removed from comparison'
+    };
 }
+
+/**
+ * Get user settings
+ * @returns {Object} User settings with defaults
+ */
+export function getSettings() {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+        return stored ? { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SETTINGS;
+    } catch (error) {
+        console.error('Error reading settings:', error);
+        return DEFAULT_SETTINGS;
+    }
+}
+
+/**
+ * Save user settings
+ * @param {Object} newSettings - Settings to save
+ */
+export function saveSettings(newSettings) {
+    try {
+        const currentSettings = getSettings();
+        const updatedSettings = { ...currentSettings, ...newSettings };
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updatedSettings));
+    } catch (error) {
+        console.error('Error saving settings:', error);
+    }
+}
+
+// Export default object for convenient importing
+export default {
+    getFavorites,
+    toggleFavorite,
+    getCompareList,
+    toggleCompare,
+    getSettings,
+    saveSettings
+};
