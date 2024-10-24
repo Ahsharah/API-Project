@@ -26,4 +26,12 @@ export function getCompareList() {
         console.error('Error getting compare list:', error);
         return new Set();
     }
+}/**
+ * Add Pokemon to favorites
+ * @param {string} pokemonId - Pokemon ID to add
+ */
+export function addToFavorites(pokemonId) {
+    const favorites = getFavorites();
+    favorites.add(pokemonId);
+    localStorage.setItem('pokemonFavorites', JSON.stringify([...favorites]));
 }
