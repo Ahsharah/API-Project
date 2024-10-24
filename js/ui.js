@@ -180,3 +180,43 @@ function createStatBar(stat) {
     `;
 }
 
+/**
+ * Updates the favorite and compare counters
+ */
+export function updateCounters() {
+    const favCount = document.getElementById('favCount');
+    const compareCount = document.getElementById('compareCount');
+    const compareButton = document.getElementById('compareButton');
+    
+    const favorites = getFavorites();
+    const compareList = getCompareList();
+    
+    favCount.textContent = favorites.size;
+    compareCount.textContent = compareList.size;
+    compareButton.disabled = compareList.size < 2;
+}
+
+/**
+ * Shows loading spinner
+ */
+export function showLoading() {
+    document.getElementById('loading').classList.remove('hidden');
+}
+
+/**
+ * Hides loading spinner
+ */
+export function hideLoading() {
+    document.getElementById('loading').classList.add('hidden');
+}
+
+/**
+ * Shows error message
+ * @param {string} message - Error message to display
+ */
+export function showError(message) {
+    const errorElement = document.getElementById('error');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+}
+
