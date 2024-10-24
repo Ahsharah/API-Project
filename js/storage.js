@@ -62,3 +62,20 @@ export function removeFromCompareList(pokemonId) {
     compareList.delete(pokemonId);
     localStorage.setItem('pokemonCompareList', JSON.stringify([...compareList]));
 }
+/**
+ * Toggle Pokemon favorite status
+ * @param {string} pokemonId - Pokemon ID to toggle
+ * @returns {boolean} New favorite status
+ */
+export function toggleFavorite(pokemonId) {
+    const favorites = getFavorites();
+    const isFavorite = favorites.has(pokemonId);
+    
+    if (isFavorite) {
+        removeFromFavorites(pokemonId);
+    } else {
+        addToFavorites(pokemonId);
+    }
+    
+    return !isFavorite;
+}
