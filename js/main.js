@@ -100,6 +100,11 @@ function applyStoredSettings() {
             if (typeFilter) typeFilter.value = settings.preferredType;
         }
 
+        // Apply theme if implemented
+        if (settings.theme) {
+            document.body.dataset.theme = settings.theme;
+        }
+
     } catch (error) {
         console.error('Failed to apply stored settings:', error);
         // Don't fail initialization for settings failure
