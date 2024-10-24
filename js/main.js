@@ -115,14 +115,14 @@ function handleInitializationError(error) {
 
     if (initState.retryCount < initState.maxRetries) {
         initState.retryCount++;
-        ui.showError('Initialization failed. Retrying... (Attempt ${initState.retryCount}/${initState.maxRetries})');
+        ui.showError(`Initialization failed. Retrying... (Attempt ${initState.retryCount}/${initState.maxRetries})`);
 
         // Retry initialization after a delay
         setTimeout(() => {
             initializeApp();
         }, 2000 * initState.retryCount); // Increasing delay with each retry
     } else {
-        ui.showError('Failed to initialize application after ${initState.maxRetries} attempts. Please refresh the page.');
+        ui.showError(`Failed to initialize application after ${initState.maxRetries} attempts. Please refresh the page.`);
     }
 }
 
@@ -154,10 +154,47 @@ function setupPerformanceMonitoring() {
             window.performance.measure('app-initialization', 'app-init-start', 'app-init-end');
 
             const measure = window.performance.getEntriesByName('app-initialization')[0];
-            console.log('App initialized in ${Math.round(measure.duration)}ms');
+            console.log(`App initialized in ${Math.round(measure.duration)}ms`);
         });
     }
 }
+
+/**
+ * Checks browser compatibility
+ * @returns {boolean} Whether browser is compatible
+ */
+function checkBrowserCompatibility() {
+    const requirements = {
+        localStorage: !!window.localStorage,
+        modules: 'noModule' in document.createElement('script'),
+        fetch: 'fetch' in window,
+        promises: 'Promise' in window
+    };
+
+    const incompatible = Object.entries(requirements)
+    .filter(([, supported]) => !supported)
+    .map(([feature]) => feature);
+
+    if (incompatible.length > 0) {
+        ui.showError(`Your browser doesn't support: ${incompatible.join(', ')}. Please use a modern browser.`);
+        return false;
+    }
+
+    return true;
+}
+
+// Initialize the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    if (checkBrowserCompatibility()) {
+        setupErrorHandling();
+        setupPerformanceMonitoring();
+        initializeApp();
+    }
+});
+
+// Export initialization function for potential manual initialization
+export { initializeApp };
+
         // Load Pokemon types for filter
         const types = await api.getPokemonTypes();
         ui.updateTypeFilter(types);
