@@ -167,3 +167,36 @@ function createStatBar(stat) {
             </div>
     `;
 }
+/**
+ * Shows Pokemon comparison modal
+ * @param {Array} pokemonList - List of Pokemon to compare
+ */
+export function showCompareModal(pokemonList) {
+    const modal = document.getElementById('compareModal');
+    const content = document.getElementById(`compareContent`);
+
+    content.innerHTML = `
+    <div class="compare-grid">
+    ${pokemonList.map(pokemon => `
+        <div class="compare-column">
+            <h3>${pokemon.name.toUpperCase()}</h3>
+            <img scr="${pokemon.sprites.official || pokemon.sprites.front}"
+                alt="${pokemon.name}"
+                class="compare-image">
+            <div class
+        `
+
+
+
+
+
+    )}
+    
+    
+    `
+
+
+
+
+
+}
