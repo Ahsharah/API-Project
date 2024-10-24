@@ -25,6 +25,7 @@ const TYPE_COLORS = {
     steel: '#B8B8D0',
     fairy: '#EE99AC'
 };
+
 /**
  * Creates a Pokemon card element
  * @param {Object} pokemon - Pokemon data
@@ -61,15 +62,14 @@ export function createPokemonCard(pokemon, isFavorite = false, isCompared = fals
     `;
 
     // Add hover animation for the image
-    const im = card.querySelector('img');
-    Image.addEventListener('mouseenter', () => {
+    const img = card.querySelector('img');
+    img.addEventListener('mouseenter', () => {
         if (pokemon.sprites.back) {
-            img.src = pokemon.sprites.back
+            img.src = pokemon.sprites.back;
         }
     });
     img.addEventListener('mouseleave', () => {
-        img.src = pokemon.sprites.official || pokemon.sprites.front;        
-
+        img.src = pokemon.sprites.official || pokemon.sprites.front;
     });
 
     return card;
@@ -78,10 +78,16 @@ export function createPokemonCard(pokemon, isFavorite = false, isCompared = fals
 /**
  * Creates a type badge element
  * @param {string} type - Pokemon type
- * @param {string} HTML string for (badge type) type badge
+ * @returns {string} HTML string for type badge
  */
 function createTypeBadge(type) {
-
+    return `
+        <span class="type-badge" 
+              style="background-color: ${TYPE_COLORS[type] || '#777'}"
+              title="Type: ${type}">
+            ${type}
+        </span>
+    `;
 }
 
 /**
@@ -90,18 +96,18 @@ function createTypeBadge(type) {
  */
 export function renderPokemonGrid(pokemonList) {
     const grid = document.getElementById('pokemonGrid');
-    const favorites = getFavorite();
+    const favorites = getFavorites();
     const compareList = getCompareList();
-
+    
     grid.innerHTML = '';
-
+    
     pokemonList.forEach(pokemon => {
         const card = createPokemonCard(
             pokemon,
             favorites.has(pokemon.id.toString()),
             compareList.has(pokemon.id.toString())
         );
-        grid.appendChild(card);        
+        grid.appendChild(card);
     });
 }
 
@@ -112,44 +118,48 @@ export function renderPokemonGrid(pokemonList) {
 export function showPokemonModal(pokemon) {
     const modal = document.getElementById('pokemonModal');
     const content = document.getElementById('modalContent');
-
+    
     content.innerHTML = `
-    <div class ="pokemon-detail fade-in">
-        <img src ="${pokemon.sprites.official || pokemon.sprites.front}"
-            alt="${pokemon.name}"
-            class="detail-image">
+        <div class="pokemon-detail fade-in">
+            <img src="${pokemon.sprites.official || pokemon.sprites.front}" 
+                 alt="${pokemon.name}"
+                 class="detail-image">
             <h2>${pokemon.name.toUpperCase()}</h2>
-
+            
             <div class="type-container">
                 ${pokemon.types.map(type => createTypeBadge(type)).join('')}
-            <div>
-
-            <p class="pokemon-description">${pokemon.description}<p>
+            </div>
             
-            <div class"pokemon-attributes">
+            <p class="pokemon-description">${pokemon.description}</p>
+            
+            <div class="pokemon-attributes">
                 <div class="attribute">
                     <span>Height:</span> ${pokemon.height}m
-            <div class="attribute">
-                <span>Base XP:</span> ${pokemon.baseExperience}
-                <div>
-            <div>
+                </div>
+                <div class="attribute">
+                    <span>Weight:</span> ${pokemon.weight}kg
+                </div>
+                <div class="attribute">
+                    <span>Base XP:</span> ${pokemon.baseExperience}
+                </div>
+            </div>
 
             <div class="pokemon-stats">
-            <h3>Base Stats</h3>
-            ${pokemon.stats.map(stat => createStatBar(stat)).join(``)}
-            <div>
+                <h3>Base Stats</h3>
+                ${pokemon.stats.map(stat => createStatBar(stat)).join('')}
+            </div>
 
-            <div> class="pokemon-abilities">
-            <h3>Abilities</h3>
-            <p>${pokemon.abilities.map(ability =>
-                ability.charAt(0).toUpperCase() + ability.slice(1)
-            ).join(`,`)}<p>
-        <div>
-    <div>
+            <div class="pokemon-abilities">
+                <h3>Abilities</h3>
+                <p>${pokemon.abilities.map(ability => 
+                    ability.charAt(0).toUpperCase() + ability.slice(1)
+                ).join(', ')}</p>
+            </div>
+        </div>
     `;
 
-modal.classList.remove('hidden');
-modal.classList.add('active');
+    modal.classList.remove('hidden');
+    modal.classList.add('active');
 }
 
 /**
@@ -158,45 +168,15 @@ modal.classList.add('active');
  * @returns {string} HTML string for stat bar
  */
 function createStatBar(stat) {
-    const percentage = (stat.value /255) * 100;// 255 is max possible stat
+    const percentage = (stat.value / 255) * 100; // 255 is max possible stat
     return `
-    <div class="stat-row"
-        <span class="stat-name">${stat.name}</span>
-        <div> class="stat-bar">
-            <div class="stat-fill" style="width: ${percentage}%"></div>
+        <div class="stat-row">
+            <span class="stat-name">${stat.name}</span>
+            <div class="stat-bar">
+                <div class="stat-fill" style="width: ${percentage}%"></div>
             </div>
+            <span class="stat-value">${stat.value}</span>
+        </div>
     `;
 }
-/**
- * Shows Pokemon comparison modal
- * @param {Array} pokemonList - List of Pokemon to compare
- */
-export function showCompareModal(pokemonList) {
-    const modal = document.getElementById('compareModal');
-    const content = document.getElementById(`compareContent`);
 
-    content.innerHTML = `
-    <div class="compare-grid">
-    ${pokemonList.map(pokemon => `
-        <div class="compare-column">
-            <h3>${pokemon.name.toUpperCase()}</h3>
-            <img scr="${pokemon.sprites.official || pokemon.sprites.front}"
-                alt="${pokemon.name}"
-                class="compare-image">
-            <div class
-        `
-
-
-
-
-
-    )}
-    
-    
-    `
-
-
-
-
-
-}
