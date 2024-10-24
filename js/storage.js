@@ -79,3 +79,20 @@ export function toggleFavorite(pokemonId) {
     
     return !isFavorite;
 }
+/**
+ * Toggle Pokemon compare status
+ * @param {string} pokemonId - Pokemon ID to toggle
+ * @returns {boolean} New compare status
+ */
+export function toggleCompare(pokemonId) {
+    const compareList = getCompareList();
+    const isCompared = compareList.has(pokemonId);
+    
+    if (isCompared) {
+        removeFromCompareList(pokemonId);
+    } else {
+        addToCompareList(pokemonId);
+    }
+    
+    return !isCompared;
+}
