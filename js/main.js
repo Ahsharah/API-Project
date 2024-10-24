@@ -68,6 +68,43 @@ async function initializeFirstPage() {
         throw new Error('Failed to load initial Pokemon data: ' + error.message);
     }
 }
+
+/**
+ * Initializes favorite and compare counters
+ */
+function initializeCounters() {
+    try {
+        ui.updateCounters();
+    } catch (error) {
+        console.error('Failed to initialize counters:', error);
+        // Don't fail initialization for counter failure
+    }
+}
+
+/**
+ * Applies any stored user settings
+ */
+function applyStoredSettings() {
+    try {
+        const settings = storage.getSettings();
+
+        // Apply sort order
+        if (settings.sortOrder) {
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) sortSelect.value = settings.sortOrder;
+        }
+
+        // Apply prefeered type filter
+        if (settings.preferredType) {
+            const typeFilter = document.getElementById('typeFilter');
+            if (typeFilter) typeFilter.value = settings.preferredType;
+        }
+
+    } catch (error) {
+        console.error('Failed to apply stored settings:', error);
+        // Don't fail initialization for settings failure
+    }
+}
         // Load Pokemon types for filter
         const types = await api.getPokemonTypes();
         ui.updateTypeFilter(types);
